@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
 import {Button} from 'reactstrap';
+import axios from 'axios';
+import {connect} from 'react-redux';
+
+
+const mapStateToProps = state => {
+    return {
+        ingredients: state.ingredients,
+        totalPrice:state.totalPrice,
+        purchasable: state.purchasable,
+    }
+}
 
 class Checkout extends Component {
     state = {
@@ -23,9 +34,29 @@ class Checkout extends Component {
             }
         })
     }
+
+    submitHandler = () => {
+        const order = {
+            ingredients: this.props.ingredients,
+            customer: this.state.values,
+            price: this.props.totalPrice,
+            orderTime: new Date(),
+        }
+        axios.post("https://burger-builder-76d80-default-rtdb.firebaseio.com/orders.json", order)  //Saving Orders to Database
+            .then(response=> console.log(response))
+            .catch(err => console.log(err))
+    }
+
+
     render() {
         return (
             <div>
+                <h4 style={{
+                    border: "1px solid grey",
+                    boxShadow: "1px 1px #888888",
+                    borderRadius: "5px",
+                    padding: "20px",
+                }}>Payment: {this.props.totalPrice} BDT</h4>
                 <form style={{
                     border: "1px solid grey",
                     boxShadow: "1px 1px #888888",
@@ -39,7 +70,7 @@ class Checkout extends Component {
                         <option value="Bkash">বিকাশে</option>
                     </select>
                     <br/>
-                    <Button style={{backgroundColor: "#D70F64"}} className="mr-auto">ক্রয় করুন</Button>
+                    <Button style={{backgroundColor: "#D70F64"}} className="mr-auto" onClick={this.submitHandler}>ক্রয় করুন</Button>
                     <Button color="secondary" className="ml-1" onClick={this.goBack}>বাতিল করুন</Button>
                 </form>
             </div> 
@@ -47,4 +78,4 @@ class Checkout extends Component {
     }
 }
 
-export default Checkout;
+export default connect(mapStateToProps)(Checkout);
