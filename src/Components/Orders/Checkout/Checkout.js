@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import {Button} from 'reactstrap';
+import {Button, Modal, ModalBody} from 'reactstrap';
+import Spinner from '../../Spinner/Spinner';
 import axios from 'axios';
 import {connect} from 'react-redux';
+import { resetIngredients } from '../../../redux/actionCreators';
 
 
 const mapStateToProps = state => {
@@ -12,13 +14,22 @@ const mapStateToProps = state => {
     }
 }
 
+const mapDispatchToProps = dispatch => {
+    return {
+        resetIngredients: () => dispatch(resetIngredients()),
+    }
+}
+
 class Checkout extends Component {
     state = {
         values: {
             deliveryAddress: "",
             phone: "",
             paymentType: "Cash On Delivery",
-        }
+        },
+        isLoading: false,
+        isModalOpen: false,
+        modalMsg: "",
     }
 
 
@@ -36,6 +47,7 @@ class Checkout extends Component {
     }
 
     submitHandler = () => {
+        this.setState({ isLoading: true })
         const order = {
             ingredients: this.props.ingredients,
             customer: this.state.values,
@@ -43,14 +55,34 @@ class Checkout extends Component {
             orderTime: new Date(),
         }
         axios.post("https://burger-builder-76d80-default-rtdb.firebaseio.com/orders.json", order)  //Saving Orders to Database
-            .then(response=> console.log(response))
-            .catch(err => console.log(err))
+            .then(response=> {
+                if(response.status === 200) { // This means we able to create a 200 status, so loading is off.....
+                    this.setState({
+                        isLoading: false,
+                        isModalOpen: true,
+                        modalMsg: "Order Placed Successfully!",
+                    })
+                    this.props.resetIngredients();
+                } else {
+                    this.setState({
+                        isLoading: false,
+                        isModalOpen: true,
+                        modalMsg: "Something Went Wrong! Order Again!",
+                    })
+                }
+            })
+            .catch(err => {
+                this.setState({
+                    isLoading: false,
+                    isModalOpen: true,
+                    modalMsg: "Something Went Wrong! Order Again!",
+                })
+            })
     }
 
 
     render() {
-        return (
-            <div>
+        let form = (<div>
                 <h4 style={{
                     border: "1px solid grey",
                     boxShadow: "1px 1px #888888",
@@ -70,12 +102,21 @@ class Checkout extends Component {
                         <option value="Bkash">বিকাশে</option>
                     </select>
                     <br/>
-                    <Button style={{backgroundColor: "#D70F64"}} className="mr-auto" onClick={this.submitHandler}>ক্রয় করুন</Button>
+                    <Button style={{backgroundColor: "#D70F64"}} className="mr-auto" onClick={this.submitHandler} disabled={!this.props.purchasable}>ক্রয় করুন</Button>
                     <Button color="secondary" className="ml-1" onClick={this.goBack}>বাতিল করুন</Button>
                 </form>
+        </div>)
+        return (
+            <div>
+                {this.state.isLoading ? <Spinner /> : form}
+                <Modal isOpen={this.state.isModalOpen} onClick={this.goBack}>
+                    <ModalBody>
+                        <p>{this.state.modalMsg}</p>
+                    </ModalBody>
+                </Modal>
             </div> 
         )
     }
 }
 
-export default connect(mapStateToProps)(Checkout);
+export default connect(mapStateToProps, mapDispatchToProps)(Checkout);

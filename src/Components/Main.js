@@ -10,7 +10,7 @@ const Main = props => {
     return (
         <div>
             <Header />
-            <div className="container">
+            <div className="container" >
                 <Route path="/orders" component={Orders} />
                 <Route path="/checkout" component={Checkout} />
                 <Route path="/" exact component={BurgerBuilder} />
@@ -20,3 +20,8 @@ const Main = props => {
 }
 
 export default Main;
+
+
+
+
+
