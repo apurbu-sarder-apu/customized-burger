@@ -4,7 +4,7 @@ import Main from './Components/Main';
 
 import { BrowserRouter } from 'react-router-dom';
 import {Provider} from 'react-redux';
-import {state, store} from './redux/store';
+import {store} from './redux/store';
 
 function App() {
   return (
