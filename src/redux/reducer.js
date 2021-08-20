@@ -21,6 +21,7 @@ const INITIAL_STATE = {
     userId: null,
 }
 
+
 export const reducer = (state=INITIAL_STATE, action) => {
     const ingredients = [...state.ingredients];
     switch(action.type){
@@ -40,7 +41,7 @@ export const reducer = (state=INITIAL_STATE, action) => {
                     item.amount--;
                 }
     
-    
+
             }
 
             return {

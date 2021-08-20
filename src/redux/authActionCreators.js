@@ -1,7 +1,6 @@
 import * as actionTypes from './actionTypes';
 import axios from 'axios';
 
-
 export const authSuccess = (token, userId) => {
     return {
         type: actionTypes.AUTH_SUCCESS,
@@ -12,14 +11,12 @@ export const authSuccess = (token, userId) => {
     }
 }
 
-
 export const auth = (email, password, mode) => dispatch => {
     const  authData = {
         email: email,
         password: password,
         returnSecureToken: true,
     }
-
 
     let authUrl = null;
     if(mode ==="Sign Up") {
@@ -31,6 +28,10 @@ export const auth = (email, password, mode) => dispatch => {
 
     axios.post(authUrl + API_KEY, authData)
     .then(response => {
+        localStorage.setItem('token', response.data.idToken);
+        localStorage.setItem('userId', response.data.localId);
+        const expirationTime = new Date(new Date().getTime() + response.data.expiresIn * 1000);
+        localStorage.setItem('expirationTime', expirationTime);
         dispatch(authSuccess(response.data.idToken, response.data.localId));
     })
 }

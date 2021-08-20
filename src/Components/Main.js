@@ -44,8 +44,3 @@ const Main = props => {
 }
 
 export default connect(mapStateToProps)(Main);
-
-
-
-
-
