@@ -101,6 +101,7 @@ export const reducer = (state=INITIAL_STATE, action) => {
                 case actionTypes.AUTH_LOGOUT:
                     return{
                         ...state,
+                        authFailedMsg: null,
                         token: null,
                         userId: null,
                     }
@@ -108,6 +109,12 @@ export const reducer = (state=INITIAL_STATE, action) => {
                     return {
                         ...state,
                         authLoading: action.payload,
+                    }
+                
+                case actionTypes.AUTH_FAILED:
+                    return {
+                        ...state,
+                        authFailedMsg: action.payload,
                     }
 
         default:
