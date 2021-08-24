@@ -12,6 +12,7 @@ const mapStateToProps = state => {
         totalPrice:state.totalPrice,
         purchasable: state.purchasable,
         userId: state.userId,
+        token: state.token,
     }
 }
 
@@ -56,7 +57,7 @@ class Checkout extends Component {
             orderTime: new Date(),
             userId: this.props.userId,
         }
-        axios.post("https://burger-builder-76d80-default-rtdb.firebaseio.com/orders.json", order)  //Saving Orders to Database
+        axios.post("https://burger-builder-76d80-default-rtdb.firebaseio.com/orders.json?auth=" + this.props.token, order)  //Saving Orders to Database
             .then(response=> {
                 if(response.status === 200) { // This means we able to create a 200 status, so loading is off.....
                     this.setState({
